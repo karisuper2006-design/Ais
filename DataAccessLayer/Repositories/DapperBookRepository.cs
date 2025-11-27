@@ -13,12 +13,22 @@ public class DapperBookRepository : IBookRepository
 {
     private readonly string _connectionString;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр репозитория Dapper.
+    /// </summary>
+    /// <param name="connectionString">Строка подключения к базе данных.</param>
     public DapperBookRepository(string connectionString)
     {
         _connectionString = connectionString;
+        // Убеждаемся, что база данных создана перед началом работы
         DbInitializer.EnsureCreated(connectionString);
     }
 
+    /// <summary>
+    /// Добавляет новую книгу в базу данных.
+    /// </summary>
+    /// <param name="entity">Книга для добавления.</param>
+    /// <returns>Добавленная книга с присвоенным ID.</returns>
     public Book Add(Book entity)
     {
         const string sql = """
@@ -30,15 +40,22 @@ public class DapperBookRepository : IBookRepository
         using var connection = CreateConnection();
         using var transaction = connection.BeginTransaction();
 
+        // Вставка книги и получение ID
         var id = connection.ExecuteScalar<long>(sql, entity, transaction);
         entity.ID = (int)id;
 
+        // Сохранение жанров
         ReplaceGenres(connection, transaction, entity);
         transaction.Commit();
 
         return entity;
     }
 
+    /// <summary>
+    /// Удаляет книгу по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор книги.</param>
+    /// <returns>True, если книга была удалена.</returns>
     public bool Delete(int id)
     {
         const string sql = "DELETE FROM Books WHERE ID = @ID";
@@ -47,6 +64,11 @@ public class DapperBookRepository : IBookRepository
         return affected > 0;
     }
 
+    /// <summary>
+    /// Ищет книги по автору.
+    /// </summary>
+    /// <param name="author">Имя автора (частичное совпадение).</param>
+    /// <returns>Список найденных книг.</returns>
     public IEnumerable<Book> FindByAuthor(string author)
     {
         if (string.IsNullOrWhiteSpace(author))
@@ -57,6 +79,8 @@ public class DapperBookRepository : IBookRepository
         var needle = author.Trim();
         var comparison = StringComparison.CurrentCultureIgnoreCase;
 
+        // Фильтрация на стороне клиента, так как SQLite LIKE может быть чувствителен к регистру (зависит от настроек)
+        // Для простоты загружаем все и фильтруем в памяти
         return GetAll()
             .Where(b => !string.IsNullOrWhiteSpace(b.Author) &&
                         b.Author.Contains(needle, comparison))
@@ -64,6 +88,11 @@ public class DapperBookRepository : IBookRepository
             .ToList();
     }
 
+    /// <summary>
+    /// Ищет книги по названию.
+    /// </summary>
+    /// <param name="title">Название книги (частичное совпадение).</param>
+    /// <returns>Список найденных книг.</returns>
     public IEnumerable<Book> FindByTitle(string title)
     {
         if (string.IsNullOrWhiteSpace(title))
@@ -81,6 +110,10 @@ public class DapperBookRepository : IBookRepository
             .ToList();
     }
 
+    /// <summary>
+    /// Получает все книги из базы данных.
+    /// </summary>
+    /// <returns>Список всех книг.</returns>
     public IEnumerable<Book> GetAll()
     {
         const string sql = "SELECT ID, Title, Author, Year FROM Books ORDER BY ID";
@@ -90,6 +123,11 @@ public class DapperBookRepository : IBookRepository
         return books;
     }
 
+    /// <summary>
+    /// Получает книгу по идентификатору.
+    /// </summary>
+    /// <param name="id">Идентификатор книги.</param>
+    /// <returns>Книга или null, если не найдена.</returns>
     public Book? GetById(int id)
     {
         const string sql = "SELECT ID, Title, Author, Year FROM Books WHERE ID = @ID";
@@ -104,6 +142,11 @@ public class DapperBookRepository : IBookRepository
         return book;
     }
 
+    /// <summary>
+    /// Обновляет данные книги.
+    /// </summary>
+    /// <param name="entity">Книга с обновленными данными.</param>
+    /// <returns>True, если обновление прошло успешно.</returns>
     public bool Update(Book entity)
     {
         const string sql = """
@@ -129,6 +172,10 @@ public class DapperBookRepository : IBookRepository
         return true;
     }
 
+    /// <summary>
+    /// Получает список всех уникальных жанров.
+    /// </summary>
+    /// <returns>Список названий жанров.</returns>
     public IReadOnlyCollection<string> GetAllGenres()
     {
         const string sql = "SELECT Name FROM Genres ORDER BY Name";
@@ -154,11 +201,15 @@ public class DapperBookRepository : IBookRepository
             .Select(g => g.Name.Trim());
     }
 
+    /// <summary>
+    /// Заменяет жанры книги в базе данных (удаляет старые связи и добавляет новые).
+    /// </summary>
     private static void ReplaceGenres(SqliteConnection connection, SqliteTransaction transaction, Book entity)
     {
         const string deleteSql = "DELETE FROM BookGenres WHERE BookId = @BookId";
         const string insertSql = "INSERT INTO BookGenres (BookId, GenreId) VALUES (@BookId, @GenreId)";
 
+        // Удаляем существующие связи
         connection.Execute(deleteSql, new { BookId = entity.ID }, transaction);
 
         var names = ExtractGenreNames(entity).ToList();
@@ -167,6 +218,7 @@ public class DapperBookRepository : IBookRepository
             return;
         }
 
+        // Получаем или создаем ID жанров
         var genreIds = EnsureGenreIds(connection, transaction, names);
         foreach (var name in names)
         {
@@ -175,10 +227,14 @@ public class DapperBookRepository : IBookRepository
                 continue;
             }
 
+            // Создаем новые связи
             connection.Execute(insertSql, new { BookId = entity.ID, GenreId = genreId }, transaction);
         }
     }
 
+    /// <summary>
+    /// Загружает и привязывает жанры к списку книг.
+    /// </summary>
     private static void AttachGenres(SqliteConnection connection, IEnumerable<Book> books)
     {
         var list = books.ToList();
@@ -214,6 +270,9 @@ public class DapperBookRepository : IBookRepository
         }
     }
 
+    /// <summary>
+    /// Обеспечивает существование жанров в базе данных и возвращает их ID.
+    /// </summary>
     private static Dictionary<string, int> EnsureGenreIds(SqliteConnection connection, SqliteTransaction transaction, IEnumerable<string> names)
     {
         var normalized = names
@@ -237,5 +296,4 @@ public class DapperBookRepository : IBookRepository
         return connection.Query<(int Id, string Name)>(selectSql, new { Names = normalized }, transaction)
             .ToDictionary(x => x.Name, x => x.Id, StringComparer.CurrentCultureIgnoreCase);
     }
-
 }

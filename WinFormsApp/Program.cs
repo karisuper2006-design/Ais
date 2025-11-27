@@ -8,7 +8,9 @@ namespace WinFormsApp
 {
     internal static class Program
     {
-
+        /// <summary>
+        /// Главная точка входа для приложения.
+        /// </summary>
         [STAThread]
         static void Main()
         {
@@ -16,6 +18,7 @@ namespace WinFormsApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Показываем форму выбора провайдера перед запуском основного окна
             using var selectionForm = new ProviderSelectionForm();
             if (selectionForm.ShowDialog() == DialogResult.OK)
             {

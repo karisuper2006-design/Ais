@@ -46,3 +46,4 @@ E:\AIS3sem-NewUI\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.pdb
 E:\AIS3sem-NewUI\BusinessLogicLayer\obj\Debug\net8.0\ref\BusinessLogicLayer.dll
 E:\AIS3sem-NewUI\BusinessLogicLayer\bin\Debug\net8.0\DataAccessLayer.dll
 E:\AIS3sem-NewUI\BusinessLogicLayer\bin\Debug\net8.0\DataAccessLayer.pdb
+E:\AIS3sem-NewUI\BusinessLogicLayer\obj\Debug\net8.0\BusinessLogicLayer.sourcelink.json

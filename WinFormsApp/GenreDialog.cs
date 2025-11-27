@@ -5,14 +5,25 @@ using System.Windows.Forms;
 
 namespace WinFormsApp
 {
+    /// <summary>
+    /// Диалоговое окно для выбора и добавления жанров.
+    /// </summary>
     public partial class GenreDialog : Form
     {
         private readonly HashSet<string> _selected;
 
+        /// <summary>
+        /// Список выбранных жанров.
+        /// </summary>
         public IReadOnlyList<string> Genres => checkedListGenres.CheckedItems
             .Cast<string>()
             .ToList();
 
+        /// <summary>
+        /// Инициализирует новый экземпляр диалога жанров.
+        /// </summary>
+        /// <param name="selectedGenres">Список уже выбранных жанров.</param>
+        /// <param name="availableGenres">Список всех доступных жанров.</param>
         public GenreDialog(IEnumerable<string>? selectedGenres, IEnumerable<string>? availableGenres = null)
         {
             InitializeComponent();
@@ -49,6 +60,9 @@ namespace WinFormsApp
             checkedListGenres.DoubleClick += (_, _) => ToggleChecked();
         }
 
+        /// <summary>
+        /// Обработчик нажатия кнопки добавления нового жанра.
+        /// </summary>
         private void btnAdd_Click(object sender, EventArgs e)
         {
             var value = textBoxNewGenre.Text.Trim();
@@ -71,6 +85,9 @@ namespace WinFormsApp
             textBoxNewGenre.Clear();
         }
 
+        /// <summary>
+        /// Обработчик нажатия кнопки OK.
+        /// </summary>
         private void btnOk_Click(object sender, EventArgs e)
         {
             if (checkedListGenres.CheckedItems.Count == 0)
@@ -83,6 +100,9 @@ namespace WinFormsApp
             DialogResult = DialogResult.OK;
         }
 
+        /// <summary>
+        /// Переключает состояние выбора элемента при двойном клике.
+        /// </summary>
         private void ToggleChecked()
         {
             if (checkedListGenres.SelectedItem is string genre)
@@ -92,6 +112,9 @@ namespace WinFormsApp
             }
         }
 
+        /// <summary>
+        /// Проверяет, существует ли жанр в списке.
+        /// </summary>
         private bool ItemExists(string value)
         {
             for (var i = 0; i < checkedListGenres.Items.Count; i++)
@@ -106,6 +129,9 @@ namespace WinFormsApp
             return false;
         }
 
+        /// <summary>
+        /// Устанавливает состояние выбора для указанного жанра.
+        /// </summary>
         private void SetChecked(string value, bool isChecked)
         {
             for (var i = 0; i < checkedListGenres.Items.Count; i++)

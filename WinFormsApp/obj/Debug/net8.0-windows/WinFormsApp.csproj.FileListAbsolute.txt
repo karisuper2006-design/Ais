@@ -236,3 +236,4 @@ E:\AIS3sem-NewUI\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.pdb
 E:\AIS3sem-NewUI\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.genruntimeconfig.cache
 E:\AIS3sem-NewUI\WinFormsApp\obj\Debug\net8.0-windows\ref\WinFormsApp.dll
 E:\AIS3sem-NewUI\WinFormsApp\bin\Debug\net8.0-windows\Ninject.dll
+E:\AIS3sem-NewUI\WinFormsApp\obj\Debug\net8.0-windows\WinFormsApp.sourcelink.json

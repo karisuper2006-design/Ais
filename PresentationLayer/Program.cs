@@ -15,23 +15,37 @@ namespace BookManagementSystem.PresentationLayer;
 
 internal static class Program
 {
+    /// <summary>
+    /// Перечисление доступных поставщиков данных.
+    /// </summary>
     private enum DataProvider
     {
         EntityFramework = 1,
         Dapper = 2
     }
 
+    /// <summary>
+    /// Точка входа в консольное приложение.
+    /// </summary>
     private static void Main()
     {
         Console.OutputEncoding = Encoding.UTF8;
 
-        // IoC Container Setup
+        // Настройка IoC контейнера
+        // По умолчанию используем EF Core, но можно было бы спросить пользователя
+        // В текущей реализации выбор провайдера захардкожен в SimpleConfigModule или выбирается через AskForProvider (если бы он использовался)
+        // Здесь мы просто создаем ядро с конфигурацией по умолчанию
         IKernel ninjectKernel = new StandardKernel(new SimpleConfigModule());
         var service = ninjectKernel.Get<BookService>();
 
         RunMenu(service);
     }
 
+    /// <summary>
+    /// Запрашивает у пользователя выбор поставщика данных.
+    /// (В текущей версии Main не используется, но метод оставлен для возможного расширения).
+    /// </summary>
+    /// <returns>Выбранный DataProvider.</returns>
     private static DataProvider AskForProvider()
     {
         Console.WriteLine("Выберите поставщика данных:");
@@ -55,6 +69,10 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Запускает главный цикл меню приложения.
+    /// </summary>
+    /// <param name="service">Сервис для работы с книгами.</param>
     private static void RunMenu(BookService service)
     {
         while (true)
@@ -94,6 +112,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Выводит пункты меню в консоль.
+    /// </summary>
     private static void PrintMenu()
     {
         Console.WriteLine("\n--- Управление библиотекой ---");
@@ -108,6 +129,10 @@ internal static class Program
         Console.Write("Выбор: ");
     }
 
+    /// <summary>
+    /// Выводит список книг в консоль.
+    /// </summary>
+    /// <param name="books">Коллекция книг для отображения.</param>
     private static void ShowBooks(IEnumerable<Book> books)
     {
         var list = books.ToList();
@@ -123,6 +148,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Запрашивает данные и создает новую книгу.
+    /// </summary>
     private static void CreateBook(BookService service)
     {
         var title = ReadRequiredString("Название: ");
@@ -134,6 +162,9 @@ internal static class Program
         Console.WriteLine($"Книга добавлена с ID {book.ID}.");
     }
 
+    /// <summary>
+    /// Запрашивает ID и удаляет книгу.
+    /// </summary>
     private static void DeleteBook(BookService service)
     {
         var id = ReadInt("ID книги для удаления: ");
@@ -147,6 +178,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Запрашивает данные и обновляет существующую книгу.
+    /// </summary>
     private static void UpdateBook(BookService service)
     {
         var id = ReadInt("ID книги для обновления: ");
@@ -165,18 +199,27 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Запрашивает автора и ищет книги.
+    /// </summary>
     private static void FindByAuthor(BookService service)
     {
         var author = ReadRequiredString("Автор: ");
         ShowBooks(service.FindBooksByAuthor(author));
     }
 
+    /// <summary>
+    /// Запрашивает название и ищет книги.
+    /// </summary>
     private static void FindByTitle(BookService service)
     {
         var title = ReadRequiredString("Часть названия: ");
         ShowBooks(service.FindBooksByTitle(title));
     }
 
+    /// <summary>
+    /// Группирует книги по жанрам и выводит результат.
+    /// </summary>
     private static void GroupByGenre(BookService service)
     {
         var groups = service.GroupBooksByGenre();
@@ -196,6 +239,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Считывает непустую строку из консоли.
+    /// </summary>
     private static string ReadRequiredString(string prompt)
     {
         Console.Write(prompt);
@@ -211,6 +257,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Считывает целое число из консоли.
+    /// </summary>
     private static int ReadInt(string prompt)
     {
         Console.Write(prompt);
@@ -226,6 +275,9 @@ internal static class Program
         }
     }
 
+    /// <summary>
+    /// Считывает список жанров, разделенных запятыми.
+    /// </summary>
     private static IReadOnlyCollection<string> ReadGenresList(string prompt)
     {
         while (true)

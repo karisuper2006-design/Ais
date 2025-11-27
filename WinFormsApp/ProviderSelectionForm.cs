@@ -4,19 +4,31 @@ using System.Drawing;
 
 namespace WinFormsApp
 {
+    /// <summary>
+    /// Форма для выбора провайдера данных (EF Core или Dapper).
+    /// </summary>
     public class ProviderSelectionForm : Form
     {
+        /// <summary>
+        /// Возвращает true, если выбран Dapper; false, если выбран EF Core.
+        /// </summary>
         public bool UseDapper { get; private set; }
 
         private Button btnEf;
         private Button btnDapper;
         private Label lblInstruction;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр формы выбора провайдера.
+        /// </summary>
         public ProviderSelectionForm()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Инициализация компонентов формы вручную (без дизайнера).
+        /// </summary>
         private void InitializeComponent()
         {
             this.Text = "Выбор провайдера данных";

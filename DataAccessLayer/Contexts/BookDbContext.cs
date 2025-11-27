@@ -5,16 +5,33 @@ namespace BookManagementSystem.DataAccessLayer.Contexts;
 
 public class BookDbContext : DbContext
 {
+    /// <summary>
+    /// Набор данных для книг.
+    /// </summary>
     public DbSet<Book> Books => Set<Book>();
+
+    /// <summary>
+    /// Набор данных для жанров.
+    /// </summary>
     public DbSet<Genre> Genres => Set<Genre>();
 
+    /// <summary>
+    /// Конструктор контекста базы данных.
+    /// </summary>
+    /// <param name="options">Опции конфигурации контекста.</param>
     public BookDbContext(DbContextOptions<BookDbContext> options)
         : base(options)
     {
     }
 
+    /// <summary>
+    /// Настройка модели при создании.
+    /// Определяет маппинг сущностей на таблицы и связи между ними.
+    /// </summary>
+    /// <param name="modelBuilder">Построитель модели.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Конфигурация сущности Книга
         var bookEntity = modelBuilder.Entity<Book>();
         bookEntity.ToTable("Books");
         bookEntity.HasKey(b => b.ID);
@@ -30,6 +47,7 @@ public class BookDbContext : DbContext
         bookEntity.Property(b => b.Year)
             .IsRequired();
 
+        // Конфигурация сущности Жанр
         var genreEntity = modelBuilder.Entity<Genre>();
         genreEntity.ToTable("Genres");
         genreEntity.HasKey(g => g.ID);
@@ -42,6 +60,7 @@ public class BookDbContext : DbContext
         genreEntity.HasIndex(g => g.Name)
             .IsUnique();
 
+        // Конфигурация связи многие-ко-многим между Книгами и Жанрами
         bookEntity
             .HasMany(b => b.Genres)
             .WithMany(g => g.Books)

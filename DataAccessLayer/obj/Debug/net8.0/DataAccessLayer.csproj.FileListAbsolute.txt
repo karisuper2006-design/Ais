@@ -44,3 +44,4 @@ E:\AIS3sem-NewUI\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.dll
 E:\AIS3sem-NewUI\DataAccessLayer\obj\Debug\net8.0\refint\DataAccessLayer.dll
 E:\AIS3sem-NewUI\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.pdb
 E:\AIS3sem-NewUI\DataAccessLayer\obj\Debug\net8.0\ref\DataAccessLayer.dll
+E:\AIS3sem-NewUI\DataAccessLayer\obj\Debug\net8.0\DataAccessLayer.sourcelink.json

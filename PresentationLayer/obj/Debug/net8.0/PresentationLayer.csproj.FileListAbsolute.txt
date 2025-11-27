@@ -183,3 +183,4 @@ E:\AIS3sem-NewUI\PresentationLayer\obj\Debug\net8.0\refint\PresentationLayer.dll
 E:\AIS3sem-NewUI\PresentationLayer\obj\Debug\net8.0\PresentationLayer.pdb
 E:\AIS3sem-NewUI\PresentationLayer\obj\Debug\net8.0\PresentationLayer.genruntimeconfig.cache
 E:\AIS3sem-NewUI\PresentationLayer\obj\Debug\net8.0\ref\PresentationLayer.dll
+e:\AIS3sem-NewUI\PresentationLayer\obj\Debug\net8.0\PresentationLayer.sourcelink.json

@@ -13,6 +13,9 @@ using System.Windows.Forms;
 
 namespace WinFormsApp
 {
+    /// <summary>
+    /// Главная форма приложения управления библиотекой.
+    /// </summary>
     public partial class Form1 : Form
     {
         private readonly BookService _service;
@@ -28,6 +31,10 @@ namespace WinFormsApp
 
         private const string AllGenresOption = "Все жанры";
 
+        /// <summary>
+        /// Инициализирует новый экземпляр главной формы.
+        /// </summary>
+        /// <param name="useDapper">Флаг использования Dapper для доступа к данным.</param>
         public Form1(bool useDapper = false)
         {
             InitializeComponent();
@@ -44,6 +51,9 @@ namespace WinFormsApp
             LoadBooks();
         }
 
+        /// <summary>
+        /// Освобождает ресурсы при закрытии формы.
+        /// </summary>
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
             base.OnFormClosed(e);
@@ -51,6 +61,9 @@ namespace WinFormsApp
             Application.RemoveMessageFilter(_outsideClickFilter);
         }
 
+        /// <summary>
+        /// Фильтр сообщений для обработки кликов вне элементов управления (для скрытия подсказок).
+        /// </summary>
         private sealed class OutsideClickMessageFilter : IMessageFilter
         {
             private readonly Form1 _owner;
@@ -125,6 +138,9 @@ namespace WinFormsApp
             LoadBooks();
         }
 
+        /// <summary>
+        /// Настраивает столбцы таблицы книг.
+        /// </summary>
         private void ConfigureGrid()
         {
             dataGridViewBooks.AutoGenerateColumns = false;
@@ -172,6 +188,9 @@ namespace WinFormsApp
             });
         }
 
+        /// <summary>
+        /// Загружает список книг из сервиса и обновляет отображение.
+        /// </summary>
         private void LoadBooks()
         {
             _allBooks = _service
@@ -183,6 +202,9 @@ namespace WinFormsApp
             RefreshGenreFilterOptions();
         }
 
+        /// <summary>
+        /// Отображает переданную коллекцию книг в таблице.
+        /// </summary>
         private void DisplayBooks(IReadOnlyCollection<Book> books)
         {
             dataGridViewBooks.DataSource = null;
@@ -190,6 +212,9 @@ namespace WinFormsApp
             dataGridViewBooks.ClearSelection();
         }
 
+        /// <summary>
+        /// Обработчик кнопки добавления книги.
+        /// </summary>
         private void btnAdd_Click(object sender, EventArgs e)
         {
             var title = textBoxTitle.Text.Trim();
@@ -216,6 +241,9 @@ namespace WinFormsApp
             MessageBox.Show("Книга добавлена.");
         }
 
+        /// <summary>
+        /// Обработчик кнопки удаления книги.
+        /// </summary>
         private void btnDelete_Click(object sender, EventArgs e)
         {
             var id = ReadSelectedBookId();
@@ -237,6 +265,9 @@ namespace WinFormsApp
             }
         }
 
+        /// <summary>
+        /// Обработчик кнопки сохранения изменений (обновления книги).
+        /// </summary>
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (!int.TryParse(textBoxId.Text, out var id))
@@ -275,6 +306,9 @@ namespace WinFormsApp
             }
         }
 
+        /// <summary>
+        /// Обработчик кнопки группировки книг по жанрам.
+        /// </summary>
         private void btnGroup_Click(object sender, EventArgs e)
         {
             if (!_allBooks.Any())
@@ -291,12 +325,18 @@ namespace WinFormsApp
             DisplayBooks(sorted);
         }
 
+        /// <summary>
+        /// Обработчик кнопки обновления списка книг.
+        /// </summary>
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             LoadBooks();
             ClearFields();
         }
 
+        /// <summary>
+        /// Обработчик кнопки редактирования жанров.
+        /// </summary>
         private void btnEditGenres_Click(object sender, EventArgs e)
         {
             var available = _service.GetAllGenres();
@@ -320,6 +360,9 @@ namespace WinFormsApp
             }
         }
 
+        /// <summary>
+        /// Обработчик изменения выбранного фильтра жанров.
+        /// </summary>
         private void comboBoxGenreFilter_SelectedIndexChanged(object? sender, EventArgs e)
         {
             if (_suppressGenreFilterUpdates)
@@ -330,6 +373,9 @@ namespace WinFormsApp
             ApplyCombinedFilters();
         }
 
+        /// <summary>
+        /// Обработчик изменения выбранной строки в таблице книг.
+        /// </summary>
         private void dataGridViewBooks_SelectionChanged(object sender, EventArgs e)
         {
             if (_suppressSelectionChange)
@@ -343,6 +389,9 @@ namespace WinFormsApp
             }
         }
 
+        /// <summary>
+        /// Заполняет поля формы данными выбранной книги.
+        /// </summary>
         private void PopulateFormFields(Book book)
         {
             textBoxId.Text = book.ID.ToString();
@@ -358,6 +407,9 @@ namespace WinFormsApp
             UpdateGenresDisplay();
         }
 
+        /// <summary>
+        /// Обработчик изменения текста в поле поиска автора.
+        /// </summary>
         private void textBoxSearchAuthor_TextChanged(object sender, EventArgs e)
         {
             if (_suppressAuthorSuggestionUpdates)
@@ -369,6 +421,9 @@ namespace WinFormsApp
             ApplyCombinedFilters();
         }
 
+        /// <summary>
+        /// Обработчик выбора автора из списка подсказок.
+        /// </summary>
         private void listBoxAuthorSuggestions_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBoxAuthorSuggestions.SelectedItem is not string author)
@@ -385,6 +440,9 @@ namespace WinFormsApp
             ApplyCombinedFilters();
         }
 
+        /// <summary>
+        /// Обработчик изменения текста в поле поиска названия.
+        /// </summary>
         private void textBoxSearchTitle_TextChanged(object sender, EventArgs e)
         {
             if (_suppressTitleSuggestionUpdates)
@@ -396,6 +454,9 @@ namespace WinFormsApp
             ApplyCombinedFilters();
         }
 
+        /// <summary>
+        /// Обработчик выбора названия из списка подсказок.
+        /// </summary>
         private void listBoxTitleSuggestions_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listBoxTitleSuggestions.SelectedItem is not string title)
@@ -412,6 +473,9 @@ namespace WinFormsApp
             ApplyCombinedFilters();
         }
 
+        /// <summary>
+        /// Фильтрует книги по автору.
+        /// </summary>
         private IEnumerable<Book> FilterBooksByAuthor(string? authorFragment, IEnumerable<Book>? source = null)
         {
             source ??= _allBooks;
@@ -426,6 +490,9 @@ namespace WinFormsApp
                 b.Author.Contains(needle, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        /// <summary>
+        /// Фильтрует книги по названию.
+        /// </summary>
         private IEnumerable<Book> FilterBooksByTitle(string? titleFragment, IEnumerable<Book>? source = null)
         {
             source ??= _allBooks;
@@ -440,6 +507,9 @@ namespace WinFormsApp
                 b.Title.Contains(needle, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        /// <summary>
+        /// Фильтрует книги по выбранному жанру.
+        /// </summary>
         private IEnumerable<Book> FilterBooksByGenre(IEnumerable<Book> source)
         {
             var selectedGenre = GetSelectedGenreFilter();
@@ -452,6 +522,9 @@ namespace WinFormsApp
                 b.Genres.Any(g => string.Equals(g.Name, selectedGenre, StringComparison.CurrentCultureIgnoreCase)));
         }
 
+        /// <summary>
+        /// Применяет все фильтры (автор, название, жанр) и обновляет список.
+        /// </summary>
         private void ApplyCombinedFilters()
         {
             var books = FilterBooksByAuthor(textBoxSearchAuthor.Text);
@@ -460,6 +533,9 @@ namespace WinFormsApp
             DisplayBooks(books.ToList());
         }
 
+        /// <summary>
+        /// Получает текущий выбранный фильтр жанра.
+        /// </summary>
         private string? GetSelectedGenreFilter()
         {
             if (_genreFilterComboBox is null ||
@@ -472,6 +548,9 @@ namespace WinFormsApp
             return selected;
         }
 
+        /// <summary>
+        /// Очищает поля ввода формы.
+        /// </summary>
         private void ClearFields()
         {
             textBoxId.Clear();
@@ -493,6 +572,9 @@ namespace WinFormsApp
             dataGridViewBooks.ClearSelection();
         }
 
+        /// <summary>
+        /// Обновляет отображение списка выбранных жанров.
+        /// </summary>
         private void UpdateGenresDisplay()
         {
             labelGenresValue.Text = _currentGenres.Any()
@@ -500,6 +582,9 @@ namespace WinFormsApp
                 : "Жанры не выбраны";
         }
 
+        /// <summary>
+        /// Обновляет список жанров в фильтре.
+        /// </summary>
         private void RefreshGenreFilterOptions()
         {
             if (_genreFilterComboBox is null)
@@ -530,6 +615,9 @@ namespace WinFormsApp
             _suppressGenreFilterUpdates = false;
         }
 
+        /// <summary>
+        /// Получает ID выбранной книги из таблицы или поля ввода.
+        /// </summary>
         private int? ReadSelectedBookId()
         {
             if (dataGridViewBooks.CurrentRow?.DataBoundItem is Book book)
@@ -545,6 +633,9 @@ namespace WinFormsApp
             return null;
         }
 
+        /// <summary>
+        /// Обновляет список подсказок авторов.
+        /// </summary>
         private void UpdateAuthorSuggestions(string? query)
         {
             var normalized = query?.Trim() ?? string.Empty;
@@ -577,12 +668,18 @@ namespace WinFormsApp
             listBoxAuthorSuggestions.Visible = true;
         }
 
+        /// <summary>
+        /// Скрывает список подсказок авторов.
+        /// </summary>
         private void HideAuthorSuggestions()
         {
             listBoxAuthorSuggestions.Visible = false;
             listBoxAuthorSuggestions.Items.Clear();
         }
 
+        /// <summary>
+        /// Обновляет список подсказок названий.
+        /// </summary>
         private void UpdateTitleSuggestions(string? query)
         {
             var normalized = query?.Trim() ?? string.Empty;
@@ -615,12 +712,18 @@ namespace WinFormsApp
             listBoxTitleSuggestions.Visible = true;
         }
 
+        /// <summary>
+        /// Скрывает список подсказок названий.
+        /// </summary>
         private void HideTitleSuggestions()
         {
             listBoxTitleSuggestions.Visible = false;
             listBoxTitleSuggestions.Items.Clear();
         }
 
+        /// <summary>
+        /// Получает основной жанр книги (первый из списка) или "Без жанра".
+        /// </summary>
         private static string GetPrimaryGenre(Book book)
         {
             return book.Genres
